@@ -13,6 +13,9 @@ CREATE TABLE Transactions(
   type VARCHAR(10) NOT NULL CHECK (type IN ('income', 'expense')),
   category VARCHAR(255) NOT NULL CHECK (category IN ('food', 'transport', 'entertainment', 'salary', 'other')),
   description VARCHAR(255),
+  status VARCHAR(10) DEFAULT 'completed' CHECK (status IN ('completed', 'pending', 'failed')),
+  currency CHAR(3) DEFAULT 'ZAR',
+  idempotency_key VARCHAR(100) UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   user_id INT NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id)
