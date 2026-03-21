@@ -40,7 +40,16 @@ try {
 router.post('/', async (req, res) => {
 try {
     // res.json({ success : true, data :{}})
-    const result = await pool.query("INSERT INTO transactions (user_id, amount_cents, description, type, category) VALUES ($1, $2, $3, $4, $5) RETURNING *", [req.body.user_id, req.body.amount_cents, req.body.description, req.body.type, req.body.category])
+    const result = await pool.query(
+      'INSERT INTO transactions (user_id, amount_cents, description, type, category) VALUES ($1, $2, $3, $4, $5) RETURNING *, amount_cents::int',
+      [
+        req.body.user_id,
+        req.body.amount_cents,
+        req.body.description,
+        req.body.type,
+        req.body.category,
+      ]
+    );
     if(!result.rows[0]){
       return res.status(404).json({ success : false, error : "Transaction not found"})
       }
