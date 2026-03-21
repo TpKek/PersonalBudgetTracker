@@ -1,0 +1,27 @@
+{
+  "name": "personalfinancetracker",
+  "version": "1.0.0",
+  "description": "Personal Finance Tracker for Portfolio ",
+  "homepage": "https://github.com/TpKek/PersonalBudgetTracker#readme",
+  "bugs": {
+    "url": "https://github.com/TpKek/PersonalBudgetTracker/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TpKek/PersonalBudgetTracker.git"
+  },
+  "license": "MIT",
+  "author": "Bertin Dreyer",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch src/app.js",
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "pg": "^8.20.0"
+  }
+}
