@@ -51,7 +51,8 @@ WHERE
     t.type = 'expense'
 ORDER BY
     u.id,
-    t.amount_cents DESC;
+    t.amount_cents DESC
+    LIMIT 5;
 
 -- Monthly spending total for the last 3 months per user
 
