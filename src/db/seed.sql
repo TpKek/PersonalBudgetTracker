@@ -53,3 +53,25 @@ INSERT INTO Transactions (amount_cents, type, category, description, created_at,
   (6500, 'expense', 'entertainment', 'Streaming subscriptions', '2026-01-04 15:00:00+02', 3),
   (4200, 'expense', 'other', 'Phone bill', '2026-01-15 10:00:00+02', 3),
   (9500, 'expense', 'entertainment', 'Gaming purchases', '2026-02-12 19:00:00+02', 3);
+
+-- Seed Transactions for user_id 8 (January & February 2026)
+
+INSERT INTO Transactions (amount_cents, type, category, description, created_at, user_id) VALUES
+  -- January 2026 Transactions
+  (485000, 'income', 'salary', 'Monthly salary - January 2026', '2026-01-25 09:00:00+02', 8),
+  (18500, 'expense', 'food', 'Weekly groceries - Pick n Pay', '2026-01-08 17:30:00+02', 8),
+  (9200, 'expense', 'food', 'Uber Eats delivery', '2026-01-10 19:00:00+02', 8),
+  (14500, 'expense', 'food', 'Restaurant dinner - Ocean Basket', '2026-01-18 20:00:00+02', 8),
+  (6800, 'expense', 'transport', 'Fuel - Engen garage', '2026-01-12 14:00:00+02', 8),
+  (4500, 'expense', 'transport', 'Gautrain ticket to Sandton', '2026-01-15 07:30:00+02', 8),
+  (12500, 'expense', 'entertainment', 'Cinema outing - Nu Metro', '2026-01-24 18:00:00+02', 8),
+  (5500, 'expense', 'entertainment', 'Netflix subscription', '2026-01-02 10:00:00+02', 8),
+  (3500, 'expense', 'other', 'MTN airtime', '2026-01-05 09:00:00+02', 8),
+  (22000, 'expense', 'other', 'Medical aid contribution', '2026-01-07 08:00:00+02', 8),
+
+  -- February 2026 Transactions
+  (485000, 'income', 'salary', 'Monthly salary - February 2026', '2026-02-25 09:00:00+02', 8),
+  (15000, 'income', 'other', 'Freelance side project payment', '2026-02-14 16:00:00+02', 8),
+  (21000, 'expense', 'food', 'Monthly grocery run - Woolworths', '2026-02-01 16:00:00+02', 8),
+  (7800, 'expense', 'transport', 'Uber rides - work week', '2026-02-10 08:00:00+02', 8),
+  (9500, 'expense', 'entertainment', 'DSTV subscription', '2026-02-03 11:00:00+02', 8);

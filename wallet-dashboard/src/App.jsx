@@ -9,7 +9,7 @@ function App() {
 
   return (
     <div>
-      {accessToken ? <Dashboard setAccessToken={setAccessToken} user={user}/> : <Login setAccessToken={setAccessToken} setUser={setUser} />}
+      {accessToken ? <Dashboard accessToken={accessToken}  user={user}/> : <Login setAccessToken={setAccessToken} setUser={setUser} />}
     </div>
   )
 }
