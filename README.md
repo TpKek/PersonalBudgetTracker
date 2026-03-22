@@ -20,6 +20,8 @@ A demo account is pre-loaded with sample transactions for testing:
 | Email | bertin@email.com |
 | Password | password123 |
 
+> **Note:** This is a shared demo account. Any transactions you add will be visible to others using the demo.
+
 ## Tech Stack
 
 | Layer | Technology |
