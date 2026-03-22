@@ -228,5 +228,5 @@ PORT=3000
 - **Idempotency Full Enforcement**: Currently the idempotency column exists but enforcement is optional. Future iterations will require an idempotency key for all mutating operations.
 - **Frontend Token Refresh**: Currently access tokens expire after 15 minutes and require manual re-login. Implement automatic token refresh using axios interceptors to silently exchange refresh tokens before they expire.
 - **Logout Functionality**: Add a logout button to the dashboard that calls POST /auth/logout to invalidate the refresh token and clears local storage on the frontend.
-- **Rate Limiting**: Add express-rate-limit to protect authentication endpoints from brute force attacks. Consider per-IP limits for login/register endpoints.
+- **Rate Limiting**: ✅ Added express-rate-limit to protect authentication endpoints from brute force attacks with per-IP limits for login (10 requests/15min) and register (100 requests/15min) endpoints.
 - **Test Suite**: Add unit tests for utility functions and API endpoint tests using supertest. Cover authentication flows, transaction CRUD operations, and error handling paths.
