@@ -294,14 +294,16 @@ This app uses real-world security practices:
 3. **Token Rotation** — Refresh tokens are replaced on use (prevents stolen token abuse)
 4. **Parameterised Queries** — No SQL injection possible
 5. **BOLA Protection** — Each user only accesses their own data
+6. **Rate Limiting** — Prevents brute force attacks on login/register
+7. **Security Headers** — Helmet.js for HTTP security headers
 
 ---
 
 ## What's Missing? (Planned Updates)
 
+- [x] Rate limiting (prevents brute force attacks) ✓
 - [ ] Auto-refresh tokens before they expire
 - [ ] Logout button on dashboard
-- [ ] Rate limiting (prevents brute force attacks)
 - [ ] Tests
 - [ ] Docker setup
 

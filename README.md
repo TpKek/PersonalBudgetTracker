@@ -11,6 +11,15 @@ A PERN stack personal finance API and dashboard built to reinforce fintech devel
 Frontend: **[Deployed on Vercel](https://wallet-dashboard-azure.vercel.app)**
 Backend: **[Deployed on Railway](https://personalbudgettracker-production.up.railway.app)**
 
+### Demo Credentials
+
+A demo account is pre-loaded with sample transactions for testing:
+
+| Field | Value |
+|-------|-------|
+| Email | bertin@email.com |
+| Password | password123 |
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -80,6 +89,8 @@ Transactions have a status field with three values: `PENDING`, `COMPLETED`, and 
 | Authorization | BOLA protection on all endpoints |
 | SQL injection | Parameterised queries only |
 | CORS | Restricted to frontend origin |
+| Rate limiting | express-rate-limit on auth endpoints |
+| Security headers | Helmet.js middleware |
 | Secrets | All stored in environment variables |
 
 ## API Reference

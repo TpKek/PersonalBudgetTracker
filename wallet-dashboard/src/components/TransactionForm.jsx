@@ -1,13 +1,42 @@
+/**
+ * Transaction Form Component
+ *
+ * Form for adding new income or expense transactions.
+ * Includes validation and idempotency key generation to prevent duplicates.
+ *
+ * @component
+ * @example
+ * <TransactionForm accessToken={token} setTransactions={setTransactions} />
+ */
+
 import React, {useState} from "react";
 import axios from "axios";
 
+/**
+ * Transaction form component
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.accessToken - JWT access token for authentication
+ * @param {Function} props.setTransactions - Callback to update transactions list
+ * @returns {JSX.Element} Transaction form
+ */
 function TransactionForm({accessToken, setTransactions}) {
+  // Form fields
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
   const [category, setCategory] = useState("");
+
+  // UI state
   const [error, setError] = useState("");
 
+  /**
+   * Handle form submission
+   * Validates input, converts amount to cents, generates idempotency key,
+   * and sends transaction to API
+   *
+   * @param {Event} e - Form submit event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -18,11 +47,14 @@ function TransactionForm({accessToken, setTransactions}) {
       return;
     }
 
+    // Validate category selection
     if (!category) {
       setError('Please select a category');
       return;
     }
 
+    // Prepare transaction data
+    // Convert from Rand to cents (multiply by 100)
     const transaction = {
       description,
       amount_cents: Math.round(amountNum * 100),
@@ -31,9 +63,11 @@ function TransactionForm({accessToken, setTransactions}) {
     }
 
     // Generate idempotency key to prevent duplicate transactions
+    // This is especially important for network failures during submission
     const idempotencyKey = crypto.randomUUID();
 
     try {
+      // Send transaction to API
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/transactions`,
         transaction,
@@ -46,7 +80,10 @@ function TransactionForm({accessToken, setTransactions}) {
         }
       );
 
+      // Update transactions list with new transaction
       setTransactions(prevTransactions => [response.data.data, ...prevTransactions]);
+
+      // Reset form fields
       setDescription("");
       setAmount("");
       setType("expense");
@@ -98,4 +135,3 @@ function TransactionForm({accessToken, setTransactions}) {
 }
 
 export default TransactionForm;
-
