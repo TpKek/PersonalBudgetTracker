@@ -22,6 +22,9 @@ import helmet from 'helmet';
 // Database connection pool
 import pool from './db/pool.js';
 
+// CORS middleware for cross-origin requests
+import cors from 'cors';
+
 // Route handlers
 import transactionRoutes from './routes/transactions.js';
 import authRoutes from './routes/auth.js';
