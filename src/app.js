@@ -5,9 +5,16 @@ import transactionRoutes from './routes/transactions.js';
 import logger from './middleware/logger.js';
 // import authenticate from './middleware/authenticate.js';
 import authRoutes from './routes/auth.js'
+import cors from 'cors';
 
 const app = express(); // create express app
 const port = process.env.PORT; // specify port
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
 app.use(express.json()); // use json middleware
 app.use(logger);
 app.use('/transactions', transactionRoutes);
