@@ -98,4 +98,69 @@ router.post('/login', async (req,res) => {
   }
 })
 
+router.post('/refresh-token', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({ success: false, error: 'No refresh token provided' });
+    }
+
+    const tokenRecord = await pool.query(
+      'SELECT * FROM refresh_tokens WHERE token = $1 AND expires_at > NOW()',
+      [refreshToken]
+    );
+
+    if (tokenRecord.rows.length === 0) {
+      return res.status(401).json({ success: false, error: 'Invalid or expired refresh token' });
+    }
+
+    const user = await pool.query(
+      'SELECT * FROM users WHERE id = $1',
+      [tokenRecord.rows[0].user_id]
+    );
+
+    if (user.rows.length === 0) {
+      return res.status(401).json({ success: false, error: 'User not found' });
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user.rows[0]);
+
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await pool.query(
+      'UPDATE refresh_tokens SET token = $1, expires_at = $2 WHERE token = $3',
+      [newRefreshToken, expiresAt, refreshToken]
+    );
+
+    res.json({
+      success: true,
+      data: {
+        accessToken,
+        refreshToken: newRefreshToken,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+router.post('/logout', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({ success: false, error: 'No refresh token provided' });
+    }
+
+    await pool.query(
+      'DELETE FROM refresh_tokens WHERE token = $1',
+      [refreshToken]
+    );
+
+    res.json({ success: true, message: 'Logged out successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 export default router;
