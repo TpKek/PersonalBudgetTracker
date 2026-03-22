@@ -30,4 +30,4 @@ Output is in the `dist` directory.
 
 ## Configuration
 
-The frontend communicates with the backend at `http://localhost:3000` by default. For production deployment, update the API base URL in the component files to point to your deployed backend URL.
+The frontend communicates with the backend at `http://localhost:3000` by default. For production deployment, the API is deployed at `https://personalbudgettracker-production.up.railway.app`.

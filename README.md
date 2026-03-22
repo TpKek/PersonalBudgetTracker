@@ -8,8 +8,8 @@ A PERN stack personal finance API and dashboard built to reinforce fintech devel
 
 ## Live Demo
 
-Frontend: **[Deployed on Vercel]()**
-Backend: **[Deployed on Railway]()**
+Frontend: **[Deployed on Vercel](https://wallet-dashboard-azure.vercel.app)**
+Backend: **[Deployed on Railway](https://personalbudgettracker-production.up.railway.app)**
 
 ## Tech Stack
 
