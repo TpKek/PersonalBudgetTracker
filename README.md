@@ -105,6 +105,7 @@ A demo account is pre-loaded with sample transactions for testing:
 | Authentication | JWT + refresh token rotation |
 | Password Hashing | bcrypt (10 rounds) |
 | HTTP Client | axios |
+| Input Validation | express-validator |
 
 ## Fintech Design Decisions
 
@@ -390,6 +391,10 @@ PORT=3000
 
 - ✅ **Rate Limiting**: Added express-rate-limit to protect authentication endpoints from brute force attacks with per-IP limits for login (10 requests/15min) and register (100 requests/15min) endpoints.
 - ✅ **Logout Functionality**: POST /auth/logout endpoint available to invalidate refresh tokens.
+- ✅ **Frontend Logout Button**: Added logout button to dashboard UI for better user experience.
+- ✅ **UUID User IDs**: Changed user IDs from INT to UUID for better security and scalability.
+- ✅ **Input Validation**: Added express-validator middleware for request validation on transaction endpoints.
+- ✅ **Secure Error Messages**: Fixed error responses to not leak internal error details to clients.
 
 ### In Progress
 
@@ -399,6 +404,5 @@ PORT=3000
 
 - **TypeScript Migration**: Add type safety across both backend and frontend to catch errors at compile time rather than runtime.
 - **Docker Containerisation**: Dockerize both services for consistent deployment and easier local development environment setup.
-- **Idempotency Full Enforcement**: Currently the idempotency column exists but enforcement is optional. Future iterations will require an idempotency key for all mutating operations.
 - **Test Suite**: Add unit tests for utility functions and API endpoint tests using supertest. Cover authentication flows, transaction CRUD operations, and error handling paths.
 
