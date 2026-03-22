@@ -11,6 +11,7 @@
 import express from "express"
 import pool from "../db/pool.js"
 import authenticate from "../middleware/authenticate.js"
+import { body, validationResult } from "express-validator"
 
 const router = express.Router();
 
@@ -54,7 +55,8 @@ router.get("/",authenticate, async (req, res) => {
    );
    res.json({ success : true, data : result.rows})
  } catch (error) {
-   res.status(500).json({ success : false, error : error.message})
+   console.error('Database error:', error);
+   res.status(500).json({ success : false, error : 'Internal server error'})
  }
 })
 
@@ -87,10 +89,11 @@ router.get("/:id",authenticate, async (req, res) => {
      return res.status(404).json({ success : false, error: "Transaction not found"})
    }
 
-   res.json({ success : true, data : result.rows[0]})
+   res.json({ success : true, data: result.rows[0]})
 
  } catch (error) {
-   res.status(500).json({ success : false, error : error.message})
+   console.error('Database error:', error);
+   res.status(500).json({ success : false, error : 'Internal server error'})
  }
 })
 
@@ -113,25 +116,35 @@ router.get("/:id",authenticate, async (req, res) => {
  * Response (201):
  *   { success: true, data: {...} }
  */
-router.post('/', authenticate, async (req, res) => {
+
+// Validation rules for creating a transaction
+const createTransactionValidation = [
+  body('amount_cents')
+    .isInt({ min: 1 })
+    .withMessage('amount_cents must be a positive integer'),
+  body('type')
+    .isIn(VALID_TYPES)
+    .withMessage(`type must be one of: ${VALID_TYPES.join(', ')}`),
+  body('category')
+    .isIn(VALID_CATEGORIES)
+    .withMessage(`category must be one of: ${VALID_CATEGORIES.join(', ')}`),
+  body('description')
+    .optional()
+    .isString()
+    .isLength({ max: 255 })
+    .withMessage('description must be a string with max 255 characters')
+];
+
+router.post('/', authenticate, createTransactionValidation, async (req, res) => {
  try {
+   // Check for validation errors
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+     return res.status(400).json({ success: false, error: errors.array()[0].msg });
+   }
+
    // Extract and validate input
    const { amount_cents, description, type, category } = req.body;
-
-   // Validate amount_cents
-   if (!amount_cents || typeof amount_cents !== 'number' || amount_cents <= 0) {
-     return res.status(400).json({ success: false, error: 'Valid positive amount_cents required' });
-   }
-
-   // Validate type
-   if (!type || !VALID_TYPES.includes(type)) {
-     return res.status(400).json({ success: false, error: 'Valid type required (income or expense)' });
-   }
-
-   // Validate category
-   if (!category || !VALID_CATEGORIES.includes(category)) {
-     return res.status(400).json({ success: false, error: 'Valid category required' });
-   }
 
    // Get idempotency key from headers
    const idempotencyKey = req.headers['idempotency-key'];
@@ -162,9 +175,10 @@ router.post('/', authenticate, async (req, res) => {
      ]
    );
 
-   res.status(201).json({ success : true, data : result.rows[0]})
+   res.status(201).json({ success : true, data: result.rows[0]})
  } catch (error) {
-   res.status(500).json({ success : false, error : error.message})
+   console.error('Database error:', error);
+   res.status(500).json({ success : false, error : 'Internal server error'})
  }
 })
 
@@ -186,14 +200,23 @@ router.post('/', authenticate, async (req, res) => {
  * Response (200):
  *   { success: true, data: {...} }
  */
-router.patch('/:id/status',authenticate, async (req,res) => {
- try {
-   const { status } = req.body;
 
-   // Validate status value
-   if (!status || !VALID_STATUSES.includes(status)) {
-     return res.status(400).json({ success: false, error: 'Invalid status value' })
-  }
+// Validation rules for updating transaction status
+const updateStatusValidation = [
+  body('status')
+    .isIn(VALID_STATUSES)
+    .withMessage(`status must be one of: ${VALID_STATUSES.join(', ')}`)
+];
+
+router.patch('/:id/status',authenticate, updateStatusValidation, async (req,res) => {
+ try {
+   // Check for validation errors
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+     return res.status(400).json({ success: false, error: errors.array()[0].msg });
+   }
+
+   const { status } = req.body;
 
    // BOLA Protection: Only update if transaction belongs to user
    const result = await pool.query(
@@ -207,7 +230,8 @@ router.patch('/:id/status',authenticate, async (req,res) => {
 
    res.json({ success : true, data : result.rows[0]})
  } catch (error) {
-   res.status(500).json({ success : false, error : error.message})
+   console.error('Database error:', error);
+   res.status(500).json({ success : false, error : 'Internal server error'})
  }
 })
 

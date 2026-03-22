@@ -32,10 +32,23 @@ function App() {
   const [accessToken, setAccessToken] = useState(null)
   const [user, setUser] = useState(null)
 
+  /**
+   * Handle user logout
+   * Clears authentication state and returns to login
+   */
+  const handleLogout = () => {
+    setAccessToken(null);
+    setUser(null);
+  };
+
   return (
     <div>
       {accessToken ? (
-        <Dashboard accessToken={accessToken} user={user}/>
+        <Dashboard
+          accessToken={accessToken}
+          user={user}
+          onLogout={handleLogout}
+        />
       ) : (
         <Login setAccessToken={setAccessToken} setUser={setUser} />
       )}

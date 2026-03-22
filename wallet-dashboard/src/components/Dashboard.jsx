@@ -2,11 +2,11 @@
  * Dashboard Component
  *
  * Main dashboard displaying user's transactions and financial summary.
- * Fetches transactions on mount and calculates balance, income, and expenses.
+ * Fetches transactions on mount and calculates balance, income, expenses.
  *
  * @component
  * @example
- * <Dashboard user={userData} accessToken={token} />
+ * <Dashboard user={userData} accessToken={token} onLogout={handleLogout} />
  */
 
 import { useState, useEffect } from 'react';
@@ -36,9 +36,10 @@ const formatZAR = (amountInCents) => {
  * @param {Object} props - Component props
  * @param {Object} props.user - Authenticated user object
  * @param {string} props.accessToken - JWT access token
+ * @param {Function} props.onLogout - Logout callback function
  * @returns {JSX.Element} Dashboard view
  */
-function Dashboard({ user, accessToken }) {
+function Dashboard({ user, accessToken, onLogout }) {
   // State management
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,6 +77,12 @@ function Dashboard({ user, accessToken }) {
 
   const balance = totalIncome - totalExpenses;
 
+  // Handle logout click
+  const handleLogoutClick = () => {
+    // Call the logout callback to clear auth state
+    onLogout();
+  };
+
   // Show loading state
   if (loading) {
     return <div>Loading...</div>;
@@ -83,7 +90,12 @@ function Dashboard({ user, accessToken }) {
 
   return (
     <div>
-      <h1>Welcome, {user?.name}</h1>
+      <div className="dashboard-header">
+        <h1>Welcome, {user?.name}</h1>
+        <button onClick={handleLogoutClick} className="logout-btn">
+          Logout
+        </button>
+      </div>
 
       {error && <p className="error">{error}</p>}
 
