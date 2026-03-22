@@ -1,5 +1,9 @@
 # Personal Budget Tracker
 
+> **New here?** Check the [User-Friendly Guide](PERSONAL-BUDGET-TRACKER.md) for a simple, easy-to-understand overview of this project.
+
+![Dashboard](screenshots/Dashboard.png)
+
 A PERN stack personal finance API and dashboard built to reinforce fintech development patterns. The project implements JWT authentication with refresh token rotation, a REST API with full CRUD operations, and a React dashboard with real-time balance tracking.
 
 ## Live Demo

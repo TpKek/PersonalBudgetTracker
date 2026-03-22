@@ -1,5 +1,7 @@
 # Personal Budget Tracker - Frontend
 
+> **Quick overview?** Check the [User-Friendly Guide](../PERSONAL-BUDGET-TRACKER.md)
+
 React frontend for the Personal Budget Tracker application. Built with Vite for fast development and production builds.
 
 ## Tech Stack
