@@ -20,3 +20,19 @@ CREATE TABLE Transactions(
   user_id INT NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Add password_hash to users
+ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NOT NULL DEFAULT '';
+
+-- New table for refresh tokens
+CREATE TABLE refresh_tokens (
+  id SERIAL PRIMARY KEY,
+  token VARCHAR(500) NOT NULL UNIQUE,
+  user_id INT NOT NULL REFERENCES users(id),
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+--Adding password_hash to Users
+
+ALTER TABLE users ADD COLUMN password_hash VARCHAR(500) NOT NULL DEFAULT '';

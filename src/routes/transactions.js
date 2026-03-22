@@ -1,9 +1,10 @@
 import express from "express"
 import pool from "../db/pool.js"
+import authenticate from "../middleware/authenticate.js"
 
 const router = express.Router()
 
-router.get("/", async (req, res) => {
+router.get("/",authenticate, async (req, res) => {
     // res.json({ success : true, data :[]})
  try {
      const result = await pool.query("SELECT *, amount_cents::int FROM transactions ORDER BY created_at DESC")
@@ -13,7 +14,7 @@ router.get("/", async (req, res) => {
  }
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:id",authenticate, async (req, res) => {
     // res.json({ success : true, data :{}})
 try {
     const result = await pool.query("SELECT *, amount_cents::int FROM transactions WHERE id = $1", [req.params.id])
@@ -27,7 +28,7 @@ try {
     res.status(500).json({ success : false, error : error.message})
 }})
 
-router.get('/user/:userId',async (req,res) => {
+router.get('/user/:userId',authenticate, async (req,res) => {
 try {
       // res.json({ success : true, data :[]})
       const result = await pool.query("SELECT *, amount_cents::int FROM transactions WHERE user_id = $1 ORDER BY created_at DESC", [req.params.userId])
@@ -37,7 +38,7 @@ try {
 }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
 try {
     // res.json({ success : true, data :{}})
     const result = await pool.query(
@@ -59,7 +60,7 @@ try {
 }
 })
 
-router.patch('/:id/status', async (req,res) => {
+router.patch('/:id/status',authenticate, async (req,res) => {
 try {
       // res.json({ success : true, data :{}})
 
