@@ -35,7 +35,7 @@ function TransactionForm({accessToken, setTransactions}) {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/transactions",
+        `${import.meta.env.VITE_API_URL}/transactions`,
         transaction,
         {
           headers: {

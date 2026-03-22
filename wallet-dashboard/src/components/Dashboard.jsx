@@ -17,7 +17,7 @@ function Dashboard({ user, accessToken }) {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/transactions', {
+      .get(`${import.meta.env.VITE_API_URL}/transactions`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
