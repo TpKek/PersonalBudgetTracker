@@ -4,6 +4,77 @@
 
 ![Dashboard](screenshots/Dashboard.png)
 
+## Table of Contents
+
+- [Personal Budget Tracker](#personal-budget-tracker)
+- [Live Demo](#live-demo)
+- [Tech Stack](#tech-stack)
+- [System Architecture](#system-architecture)
+- [Fintech Design Decisions](#fintech-design-decisions)
+  - [Money as BIGINT Cents](#money-as-bigint-cents)
+  - [Idempotency Keys](#idempotency-keys)
+  - [Refresh Token Rotation](#refresh-token-rotation)
+  - [BOLA Protection](#bola-protection)
+- [Security Implementation](#security-implementation)
+- [Database Schema](#database-schema)
+- [API Reference](#api-reference)
+  - [Authentication](#authentication)
+  - [Transactions](#transactions)
+  - [Request/Response Formats](#requestresponse-formats)
+  - [Error Responses](#error-responses)
+- [Challenges and Solutions](#challenges-and-solutions)
+- [Local Setup](#local-setup)
+- [Planned Improvements](#planned-improvements)
+
+## System Architecture
+
+```mermaid
+graph TB
+    subgraph Client["Frontend - React + Vite"]
+        Login["Login.jsx"]
+        Dashboard["Dashboard.jsx"]
+        TransForm["TransactionForm.jsx"]
+        Axios["Axios HTTP Client"]
+    end
+
+    subgraph Server["Backend - Express API"]
+        AuthRoutes["/auth/* Routes"]
+        TransRoutes["/transactions/* Routes"]
+        AuthMW["authenticate middleware"]
+        JWT["JWT Verification"]
+        RateLimiter["express-rate-limit"]
+        Helmet["Helmet.js"]
+    end
+
+    subgraph Database["PostgreSQL"]
+        Pool["pg Pool Connection"]
+        Users["users table"]
+        Trans["transactions table"]
+        RefreshTokens["refresh_tokens table"]
+    end
+
+    Login --> Axios
+    Dashboard --> Axios
+    TransForm --> Axios
+
+    Axios --> AuthRoutes
+    Axios --> TransRoutes
+
+    AuthRoutes --> RateLimiter
+    TransRoutes --> AuthMW
+
+    AuthMW --> JWT
+    JWT --> Pool
+
+    Pool --> Users
+    Pool --> Trans
+    Pool --> RefreshTokens
+
+    style Client fill:#e1f5fe
+    style Server fill:#fff3e0
+    style Database fill:#e8f5e9
+```
+
 A PERN stack personal finance API and dashboard built to reinforce fintech development patterns. The project implements JWT authentication with refresh token rotation, a REST API with full CRUD operations, and a React dashboard with real-time balance tracking.
 
 ## Live Demo
@@ -95,6 +166,47 @@ Transactions have a status field with three values: `PENDING`, `COMPLETED`, and 
 | Security headers | Helmet.js middleware |
 | Secrets | All stored in environment variables |
 
+## Database Schema
+
+```mermaid
+erDiagram
+    USERS ||--o{ TRANSACTIONS : "owns"
+    USERS ||--o{ REFRESH_TOKENS : "has"
+
+    USERS {
+        uuid id PK
+        string name
+        string email UK
+        string password_hash
+        timestamptz created_at
+    }
+
+    TRANSACTIONS {
+        uuid id PK
+        bigint amount_cents
+        string type
+        string category
+        string description
+        string status
+        varchar idempotency_key UK
+        uuid user_id FK
+        timestamptz created_at
+    }
+
+    REFRESH_TOKENS {
+        uuid id PK
+        text token
+        uuid user_id FK
+        timestamptz expires_at
+    }
+```
+
+| Table | Description |
+|-------|-------------|
+| `users` | Stores user accounts with hashed passwords |
+| `transactions` | Stores income/expense records with idempotency keys |
+| `refresh_tokens` | Stores active refresh tokens for session management |
+
 ## API Reference
 
 ### Authentication
@@ -138,6 +250,57 @@ Response: {
     "status": "completed",
     "created_at": "2024-01-15T10:30:00Z"
   }
+}
+```
+
+### Error Responses
+
+All error responses follow a consistent format:
+
+```json
+{
+  "success": false,
+  "error": "Error message string"
+}
+```
+
+#### HTTP Status Codes
+
+| Status Code | Description | Common Causes |
+|-------------|-------------|---------------|
+| 400 | Bad Request | Invalid JSON, missing required fields |
+| 401 | Unauthorized | Missing or invalid access token |
+| 403 | Forbidden | Token valid but insufficient permissions |
+| 404 | Not Found | Resource doesn't exist |
+| 409 | Conflict | Duplicate idempotency key |
+| 429 | Too Many Requests | Rate limit exceeded |
+| 500 | Internal Server Error | Server-side failure |
+
+#### Error Response Examples
+
+```json
+// 400 - Validation Error
+{
+  "success": false,
+  "error": "Valid positive amount_cents required"
+}
+
+// 401 - Invalid Token
+{
+  "success": false,
+  "error": "Invalid or expired token"
+}
+
+// 401 - Invalid Credentials
+{
+  "success": false,
+  "error": "Invalid email or password"
+}
+
+// 404 - Not Found
+{
+  "success": false,
+  "error": "Transaction not found"
 }
 ```
 
@@ -223,10 +386,19 @@ PORT=3000
 
 ## Planned Improvements
 
+### Completed Features
+
+- ✅ **Rate Limiting**: Added express-rate-limit to protect authentication endpoints from brute force attacks with per-IP limits for login (10 requests/15min) and register (100 requests/15min) endpoints.
+- ✅ **Logout Functionality**: POST /auth/logout endpoint available to invalidate refresh tokens.
+
+### In Progress
+
+- **Frontend Token Refresh**: Currently access tokens expire after 15 minutes and require manual re-login. Implement automatic token refresh using axios interceptors to silently exchange refresh tokens before they expire.
+
+### Future Enhancements
+
 - **TypeScript Migration**: Add type safety across both backend and frontend to catch errors at compile time rather than runtime.
 - **Docker Containerisation**: Dockerize both services for consistent deployment and easier local development environment setup.
 - **Idempotency Full Enforcement**: Currently the idempotency column exists but enforcement is optional. Future iterations will require an idempotency key for all mutating operations.
-- **Frontend Token Refresh**: Currently access tokens expire after 15 minutes and require manual re-login. Implement automatic token refresh using axios interceptors to silently exchange refresh tokens before they expire.
-- **Logout Functionality**: Add a logout button to the dashboard that calls POST /auth/logout to invalidate the refresh token and clears local storage on the frontend.
-- **Rate Limiting**: ✅ Added express-rate-limit to protect authentication endpoints from brute force attacks with per-IP limits for login (10 requests/15min) and register (100 requests/15min) endpoints.
 - **Test Suite**: Add unit tests for utility functions and API endpoint tests using supertest. Cover authentication flows, transaction CRUD operations, and error handling paths.
+
