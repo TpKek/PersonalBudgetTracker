@@ -3,15 +3,15 @@ import express from 'express';
 import pool from './db/pool.js';
 import transactionRoutes from './routes/transactions.js';
 import logger from './middleware/logger.js';
-// import authenticate from './middleware/authenticate.js';
 import authRoutes from './routes/auth.js'
 import cors from 'cors';
 
 const app = express(); // create express app
 const port = process.env.PORT; // specify port
+const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: corsOrigin,
     credentials: true,
   })
 );
@@ -31,5 +31,5 @@ app.get('/health', (req, res) => {
 
 // start the Express server
 app.listen(port, () => {
-  console.log(`server started at http://localhost:${port}`);
+  // Server running
 });

@@ -13,5 +13,4 @@ export default pool
 
 pool
   .connect()
-  .then(() => console.log('Database connected'))
   .catch(err => console.error('Database connection failed:', err.message));

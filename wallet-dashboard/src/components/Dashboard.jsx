@@ -12,6 +12,8 @@ const formatZAR = (amountInCents) => {
 
 function Dashboard({ user, accessToken }) {
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     axios
@@ -20,9 +22,15 @@ function Dashboard({ user, accessToken }) {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then(res => setTransactions(res.data.data))
-      .catch(err => console.log(err));
-  }, []);
+      .then(res => {
+        setTransactions(res.data.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Failed to load transactions');
+        setLoading(false);
+      });
+  }, [accessToken]);
 
   const totalIncome = transactions
     .filter(t => t.type === 'income')
@@ -34,9 +42,16 @@ function Dashboard({ user, accessToken }) {
 
   const balance = totalIncome - totalExpenses;
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
       <h1>Welcome, {user?.name}</h1>
+
+      {error && <p className="error">{error}</p>}
+
       <TransactionForm accessToken={accessToken} setTransactions={setTransactions} />
 
       <div className="balance-summary">

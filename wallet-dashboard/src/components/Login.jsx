@@ -1,7 +1,3 @@
-// Login
-
-//email and password
-
 import React from "react"
 import { useState } from "react"
 import axios from "axios"
@@ -9,10 +5,14 @@ import axios from "axios"
 function Login({setAccessToken, setUser}) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    //POST to auth/login
+    setError("")
+    setLoading(true)
+
     axios.post("http://localhost:3000/auth/login", {
       email,
       password,
@@ -20,10 +20,12 @@ function Login({setAccessToken, setUser}) {
     .then((res) => {
       setAccessToken(res.data.data.accessToken)
       setUser(res.data.data.user)
-      console.log(res.data)
     })
     .catch((err) => {
-      console.log(err)
+      setError(err.response?.data?.error || "Login failed");
+    })
+    .finally(() => {
+      setLoading(false);
     })
   }
 
@@ -46,7 +48,10 @@ function Login({setAccessToken, setUser}) {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Sign In</button>
+          {error && <p className="error">{error}</p>}
+          <button type="submit" disabled={loading}>
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
         </form>
       </div>
     </div>

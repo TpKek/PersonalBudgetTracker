@@ -6,15 +6,32 @@ function TransactionForm({accessToken, setTransactions}) {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
   const [category, setCategory] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate amount
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setError('Please enter a valid amount');
+      return;
+    }
+
+    if (!category) {
+      setError('Please select a category');
+      return;
+    }
+
     const transaction = {
       description,
-      amount_cents: parseFloat(amount) * 100,
+      amount_cents: Math.round(amountNum * 100),
       type,
       category
     }
+
+    // Generate idempotency key to prevent duplicate transactions
+    const idempotencyKey = crypto.randomUUID();
 
     try {
       const response = await axios.post(
@@ -23,7 +40,8 @@ function TransactionForm({accessToken, setTransactions}) {
         {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`
+            "Authorization": `Bearer ${accessToken}`,
+            "Idempotency-Key": idempotencyKey
           }
         }
       );
@@ -33,8 +51,9 @@ function TransactionForm({accessToken, setTransactions}) {
       setAmount("");
       setType("expense");
       setCategory("");
-    } catch (error) {
-      console.error("Failed to add transaction:", error);
+    } catch {
+      // Error handling done via error state
+      setError('Failed to add transaction');
     }
   }
 
@@ -51,8 +70,13 @@ function TransactionForm({accessToken, setTransactions}) {
         <input
           type="number"
           placeholder="Amount"
+          step="0.01"
+          min="0"
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => {
+            setAmount(e.target.value);
+            setError('');
+          }}
         />
         <select value={type} onChange={(e) => setType(e.target.value)}>
           <option value="expense">Expense</option>
@@ -66,6 +90,7 @@ function TransactionForm({accessToken, setTransactions}) {
           <option value="salary">Salary</option>
           <option value="other">Other</option>
         </select>
+        {error && <p className="error">{error}</p>}
         <button type="submit">Add Transaction</button>
       </form>
     </div>
@@ -73,3 +98,4 @@ function TransactionForm({accessToken, setTransactions}) {
 }
 
 export default TransactionForm;
+
