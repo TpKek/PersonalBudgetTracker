@@ -82,6 +82,9 @@ A PERN stack personal finance API and dashboard built to reinforce fintech devel
 Frontend: **[Deployed on Vercel](https://wallet-dashboard-azure.vercel.app)**
 Backend: **[Deployed on Railway](https://personalbudgettracker-production.up.railway.app)**
 
+NOTE: Backend database was Railway, I had a trail there so login does not work unless I pay $5 a month.
+Will be moving to Supabase.
+
 ### Demo Credentials
 
 A demo account is pre-loaded with sample transactions for testing:
